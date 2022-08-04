@@ -11,41 +11,39 @@ const refs = {
 
 // fetch(`https://restcountries.com/v3/all`).then(response => response.json()).then(data => console.log(data))
 
-refs.input.addEventListener("input", inputHandler)
+refs.input.addEventListener("input", debounce(inputHandler, DEBOUNCE_DELAY))
 
 
-
+let nameCountry = null
 
 
 function inputHandler(e) {
-    let nameCountry = e.target.value
-    fetch(`https://restcountries.com/v3/name/${nameCountry}?fields=name,capital,population,flags,languages`)
-        .then(response => response.json()).then(countries => {
+     nameCountry = e.target.value
+   
+    fetchCountries(nameCountry).then(countries => {
             refs.list.innerHTML = ""
             refs.info.innerHTML = ""
             renderList(countries)
-            // console.log(countries[0].flags[0])
-});
+}).catch(error => error);
 };
 
 
 function fetchCountries(name) {
-
+return fetch(`https://restcountries.com/v3/name/${name}?fields=name,capital,population,flags,languages`)
+        .then(response => response.json())
 }
 
 function createlist(arr) {
-    // console.log()
     return arr.reduce((acc, { flags, name }) => acc + 
     `<li>
-     <img src="${flags[0]}" wigth="20px" height="20px" alt="flag"> <p>${name.official}</p>
+     <p> <img src="${flags[0]}" wigth="20px" height="20px" alt="flag"> ${name.official}</p>
     </li>`, "");
-
 }   
  
 function createOneCountryList(arr) {
     return arr.reduce((acc, { flags, name, capital, population, languages }) => acc + 
 `<ul>
- <p><li><img src="${flags[0]}" wigth="20px" height="20px" alt="flag"> ${name.official}</p></li>
+ <li><p><img src="${flags[0]}" wigth="20px" height="20px" alt="flag"> ${name.official}</p></li>
 <li>Capital: ${capital}</li>
 <li>Population: ${population}</li>
 <li>Languages: ${Object.values(languages)}</li>
@@ -53,8 +51,25 @@ function createOneCountryList(arr) {
 };
 
 function renderList(array) {
-     if (array.length > 1 && array.length <= 10) {
-        refs.list.insertAdjacentHTML("beforeend", createlist(array)) 
+    
+    if (array.length === 1) {
+            refs.info.insertAdjacentHTML("beforeend", createOneCountryList(array))
+        }
+     if (array.length > 1 || array.length >= 10) {
+         refs.list.insertAdjacentHTML("beforeend", createlist(array)) 
      }
-    else{refs.info.insertAdjacentHTML("beforeend", createOneCountryList(array))}
+    if (array.length > 10) {
+        Notify.info("Too many matches found. Please enter a more specific name.");
+    }
+    
+   
+       
 }
+
+
+
+
+            // const countryName = countries.map(i => i.name.official).join().toLowerCase()
+            // if (refs.input.value.toLowerCase() !== countryName) {
+                
+            // }
