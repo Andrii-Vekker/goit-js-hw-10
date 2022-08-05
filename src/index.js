@@ -32,7 +32,7 @@ function inputHandler(e) {
         
         renderList(countries);
         
-}).catch(Notify.failure("Oops, there is no country with that name"));
+}).catch(error => error(Notify.failure("Oops, there is no country with that name")));
     };   
 };
 
