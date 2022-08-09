@@ -1,4 +1,5 @@
 import './css/styles.css';
+import axios from "axios";
 import { Notify } from 'notiflix/build/notiflix-notify-aio';
 import debounce from 'lodash.debounce'
 import { fetchCountries } from '../fetchCountries';
@@ -29,7 +30,7 @@ function inputHandler(e) {
       
         refs.list.innerHTML = "";
         refs.info.innerHTML = "";
-        
+        console.log(cou)
         renderList(countries);
         
 }).catch(error => error(Notify.failure("Oops, there is no country with that name")));
